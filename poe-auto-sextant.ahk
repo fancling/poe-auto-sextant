@@ -1,8 +1,18 @@
+sextant_position_x = 0
+sextant_position_y = 0
+compass_position_x = 0
+compass_position_y = 0
+watchstone_position_x = 0
+watchstone_position_y = 0
+bag_for_stored_compass_position_x = 0
+bag_for_stored_compass_position_y = 0
+
 F6::
     ; Change the value below here to limit how many times it will try to roll before giving up
     QuantityToRoll := 10
     ; Change the value below here if you want to look for a different sextant modifier
-    SearchString:="for each Poison on them"
+
+    SearchString:="aaa|bbb|ccc"
 
     Send, {Shift down}
     Sleep, 200
@@ -26,10 +36,12 @@ F6::
         clipboard := ""
 
         hasRoll := 0
-        ; If(InStr(watchstoneDetails, "for each Poison on them", 0))
-        If(InStr(watchstoneDetails, SearchString, 0))
-        {
-            hasRoll:= 1
+        
+        Loop, parse, SearchString, |
+            If(InStr(watchstoneDetails, A_LoopField, 0))
+            {
+                hasRoll:= 1
+            }
         }
         
         If(hasRoll == 1)
@@ -37,8 +49,11 @@ F6::
             Send, {Shift up}
             Send, {Shift down}
             Send, {Shift up}
-            ; MsgBox Craft found -- stop rolling
-            break
+            storeWithCompass()
+            Send, {Shift down}
+            MouseClick, right, sextant_position_x, sextant_position_y
+            MouseClick, left, watchstone_position_x, watchstone_position_x
+            Sleep, 100
         }   
         If(hasRoll == 0 )
         {
@@ -55,3 +70,12 @@ F6::
         Send, {Shift up}
 
     return
+
+storeWithCompass(){
+    MouseClick, right, compass_position_x, compass_position_y
+    MouseClick, left, watchstone_position_x, watchstone_position_y
+    MouseClick, left, bag_for_stored_compass_position_x, bag_for_stored_compass_position_x
+    Send, {Shift down}
+    MouseClick, left, bag_for_stored_compass_position_x, bag_for_stored_compass_position_x
+    Send, {Shift up}
+}
